@@ -5,74 +5,84 @@
 - **Judul Praktikum:** Grafika Komputer Pertemuan 6, Introduction to Three.js: Mini 3D Scene
 
 ## Deskripsi Scene
-Kota mini berisi gedung, jalan perempatan, pohon, lampu jalan, air mancur, galeri material, dan satu kubus yang bisa dikendalikan. Matahari dan bulan mengorbit sehingga scene berganti siang, senja, dan malam (warna latar, intensitas light, dan jendela gedung ikut berubah).
+Untuk tugas ini saya membuat sebuah kota mini yang berisi gedung berjendela, jalan perempatan, pohon, lampu jalan, air mancur, bangku taman, galeri material, dan satu mobil merah yang bisa saya kendalikan sendiri. Matahari dan bulan saya buat mengorbit sehingga scene berganti dari siang, senja, sampai malam. Saat malam, warna latar menggelap, intensitas cahaya turun, dan jendela gedung menyala. Saya sengaja memilih ide kota supaya semua materi pertemuan ini (geometry, material, light, shadow, animasi, kamera) bisa dipakai dalam satu scene yang sama.
 
 ## Daftar Geometry
-BoxGeometry (gedung, kubus), SphereGeometry (matahari, bulan, kepala lampu, galeri material), PlaneGeometry (ground dan jalan), CylinderGeometry (batang pohon, tiang lampu, kolam), ConeGeometry (daun pohon), TorusGeometry (cincin air mancur).
+Saya memakai `BoxGeometry` untuk trotoar dan bangku taman, serta `RoundedBoxGeometry` (turunan `BoxGeometry` dengan sudut membulat) untuk gedung, atap, dan bodi mobil. `SphereGeometry` saya pakai untuk matahari, bulan, kepala lampu, tajuk pohon bulat, puncak air mancur, dan galeri material. `PlaneGeometry` saya pakai untuk ground dan jalan. `CylinderGeometry` untuk batang pohon, tiang lampu, kolam, roda, dan antena. `ConeGeometry` untuk pohon cemara, dan `TorusGeometry` untuk cincin air mancur.
+
+## Tekstur
+Semua tekstur saya buat sendiri secara prosedural lewat Canvas (`THREE.CanvasTexture`), jadi tidak ada file gambar tambahan. Teksturnya meliputi rumput berbintik, aspal dengan marka jalan, kulit kayu, daun, dan fasad gedung berjendela. Untuk jendela yang menyala saat malam, saya memakai `emissiveMap` yang hanya berisi area jendela.
 
 ## Daftar Material
-MeshLambertMaterial (gedung, ground, pohon), MeshPhongMaterial (jalan, tiang lampu, air mancur), MeshBasicMaterial (matahari, bulan, kepala lampu), MeshNormalMaterial (galeri dan kubus). Galeri dan kubus memuat keempat jenis material.
+`MeshLambertMaterial` saya pakai untuk gedung, ground, pohon, dan trotoar. `MeshPhongMaterial` untuk jalan, tiang lampu, air mancur, dan kaca mobil. `MeshBasicMaterial` untuk matahari, bulan, dan kepala lampu. `MeshNormalMaterial` ada di galeri dan mobil. Galeri bola dan mobil memuat keempat jenis material, supaya perbedaannya bisa saya bandingkan langsung.
 
 ## Daftar Light
-AmbientLight dan DirectionalLight (matahari, bergerak mengorbit).
+Ada dua light: `AmbientLight` untuk cahaya dasar dan `DirectionalLight` yang berperan sebagai matahari dan bergerak mengorbit.
 
 ## Konfigurasi Shadow
-`renderer.shadowMap.enabled = true` (PCFSoftShadowMap), DirectionalLight `castShadow`, gedung/pohon/kubus `castShadow`, ground dan jalan `receiveShadow`. Shadow camera ortografik +/-24, ukuran shadow map dapat diganti 512/1024/2048.
+Saya mengaktifkan `renderer.shadowMap.enabled = true` dengan tipe `PCFSoftShadowMap`. `DirectionalLight` diberi `castShadow`, begitu juga gedung, pohon, dan mobil. Ground dan jalan diberi `receiveShadow`. Shadow camera ortografik saya atur ±24 supaya seluruh kota masuk, dan ukuran shadow map bisa diganti 512/1024/2048 dengan tombol 1/2/3.
 
 ## Animasi yang Dibuat
-Orbit matahari dan bulan (siang-malam), rotasi bola galeri, semuanya memakai `THREE.Clock` (delta time) di `requestAnimationFrame`.
+Ada tiga animasi. Matahari dan bulan mengorbit sehingga terjadi siklus siang-malam, bola galeri berputar, dan mobil bergerak mengikuti input keyboard. Semuanya berjalan di `requestAnimationFrame` dengan `THREE.Clock` sehingga kecepatannya memakai delta time.
 
 ## Challenge yang Dikerjakan
-A (Cylinder, Cone, Torus), B (Material Gallery), C (OrthographicCamera, tombol P), D (Light Animation), E (Shadow Quality, tombol 1/2/3), F (Scene Information di HUD), G (Toggle Animation, Space), H (Kontrol kubus, panah dan Q/E).
+Saya mengerjakan semua challenge, A sampai H. A (Cylinder, Cone, Torus), B (Material Gallery), C (OrthographicCamera, tombol P), D (Light Animation), E (Shadow Quality, tombol 1/2/3), F (Scene Information di HUD), G (Toggle Animation, Space), dan H (kontrol mobil dengan panah dan Q/E).
 
 ## Cara Menjalankan
 ```bash
 npm install
 npm run dev
 ```
+Lalu buka alamat yang muncul di terminal (biasanya `http://localhost:5173/`).
+
+## Kontrol Kamera (Mouse)
+Di luar yang diminta modul, saya menambahkan `OrbitControls` supaya kota bisa dilihat dari berbagai sudut. Tahan klik kiri lalu geser untuk memutar kamera, scroll untuk zoom, dan tahan klik kanan lalu geser untuk pan. Kamera saya batasi agar tidak masuk ke bawah tanah (`maxPolarAngle`) dan jarak zoom dibatasi 8 sampai 90. Karena ada dua kamera, saya membuat dua instance kontrol dan mengaktifkan yang sesuai saat tombol P ditekan.
 
 ## Kontrol Keyboard
 | Tombol | Fungsi |
 |---|---|
+| Mouse (geser / scroll / klik kanan) | Putar kamera / zoom / pan |
 | Space | Pause / resume animasi |
 | P | Perspective / Orthographic |
-| Panah | Gerak kubus merah |
-| Q / E | Putar kubus |
-| M | Ganti material kubus |
+| Panah | Gerak mobil merah |
+| Q / E | Putar mobil |
+| M | Ganti material mobil |
 | 1 / 2 / 3 | Shadow map 512 / 1024 / 2048 |
 
 ## Panel Eksperimen (Eksperimen Wajib 2-11)
-Info status eksperimen tampil di HUD. Tekan **Space** untuk pause saat siang agar kondisi light stabil.
+Status eksperimen tampil di HUD. Waktu mencoba eksperimen cahaya, saya menekan **Space** saat siang supaya matahari diam dan kondisinya stabil.
 
 | Tombol | Eksperimen |
 |---|---|
 | Z / X / C | #2 Segment sphere 8x6 / 32x16 / 64x32 (jumlah vertex di HUD dan Console) |
 | L | #3 Matikan/hidupkan Ambient + Directional light (bandingkan Basic vs Lambert dengan M) |
-| M | #3, #4, #5 Ganti material kubus (Basic, Normal, Lambert, Phong) |
+| M | #3, #4, #5 Ganti material mobil (Basic, Normal, Lambert, Phong) |
 | I / O | #7 Intensitas Directional (0.3, 1, 2, 4) / Ambient (0.2, 0.6, 1.0) |
 | B | #8 renderer.shadowMap.enabled on/off |
-| V / N | #8 kubus castShadow / ground receiveShadow on/off |
+| V / N | #8 mobil castShadow / ground receiveShadow on/off |
 | T / Y / U | #9 FOV 35 / 60 / 90 |
 | R | #10 updateProjectionMatrix saat resize on/off (lalu resize jendela) |
 | D | #11 Rotasi bola galeri: 0.8 * delta vs += 0.01 per frame |
 
 ## Catatan Debugging
-Kendala yang ditemui (dan terlihat di kode `src/main.js`) beserta solusinya:
+Selama mengerjakan, ada beberapa masalah yang saya temui dan saya selesaikan.
 
-1. **Jalan "berkedip" menimpa ground (z-fighting).** Plane jalan dan plane ground berada pada tinggi yang sama sehingga depth buffer tidak bisa menentukan mana yang di depan. Solusi: jalan diangkat sedikit, `road.position.y = 0.02 + rot * 0.001`, dan kedua jalan diberi selisih 0.001 agar tidak saling berkedip di perempatan.
-2. **Plane tampil tegak, bukan datar.** `PlaneGeometry` secara default berada di bidang XY. Solusi: `ground.rotation.x = -Math.PI / 2`.
-3. **Objek terlihat hitam.** Penyebabnya material Lambert/Phong yang tidak mendapat cahaya. Dibandingkan dengan `MeshBasicMaterial` (matahari, bulan, kepala lampu) yang tetap terlihat. Di scene ini hal itu terjadi saat malam atau saat light dimatikan dengan tombol **L**.
-4. **Shadow tidak mengikuti perubahan.** Saat `renderer.shadowMap.enabled` diubah (tombol **B**), material perlu dikompilasi ulang, sehingga dipanggil `material.needsUpdate = true` lewat `scene.traverse`. Saat ukuran shadow map diganti (tombol **1/2/3**), map lama harus dibuang dengan `sun.shadow.map.dispose()` dan di-null-kan agar dibuat ulang dengan ukuran baru.
-5. **Shadow terpotong.** Volume shadow camera DirectionalLight harus mencakup seluruh kota, jadi diatur `left/right/top/bottom = ±24` dan `far = 90`.
-6. **Halaman ikut scroll saat menekan Space/panah.** Diatasi dengan `e.preventDefault()` untuk tombol tersebut.
-7. **Tampilan gepeng/terdistorsi saat resize.** Aspect camera harus diperbarui dan `updateProjectionMatrix()` dipanggil. Untuk `OrthographicCamera`, batas left/right/top/bottom dihitung ulang dari aspect ratio.
-8. **Animasi melompat setelah pindah tab.** `delta` dibatasi dengan `Math.min(clock.getDelta(), 0.1)` agar tidak terjadi lonjakan besar.
-9. **Event keyboard berulang.** Toggle (Space, P, M, dan lainnya) hanya diproses sekali per penekanan dengan `if (e.repeat) return`, sedangkan gerak kubus memakai state `keys[]` agar kontinu.
+1. **Jalan berkedip di atas ground (z-fighting).** Awalnya jalan dan ground sama-sama berada di y = 0, jadi depth buffer tidak bisa menentukan siapa yang di depan dan permukaannya berkedip. Saya menaikkan jalan sedikit (`road.position.y = 0.02`) dan memberi selisih 0.001 antara dua jalan supaya tidak saling berkedip di perempatan.
+2. **Ground dan jalan berdiri tegak.** `PlaneGeometry` secara default ada di bidang XY, jadi harus saya putar dengan `rotation.x = -Math.PI / 2` agar menjadi datar.
+3. **Objek tiba-tiba hitam.** Saya sempat mengira ada yang salah di geometry atau kamera, padahal material Lambert dan Phong memang gelap tanpa cahaya. Hal ini muncul saat malam atau saat light saya matikan dengan tombol L, sedangkan material Basic (matahari, bulan, lampu) tetap terlihat.
+4. **Shadow tidak ikut berubah.** Setelah `renderer.shadowMap.enabled` saya ubah dengan tombol B, material perlu dikompilasi ulang, jadi saya memanggil `material.needsUpdate = true` lewat `scene.traverse`. Untuk mengganti ukuran shadow map (tombol 1/2/3), map lama harus dibuang dengan `dispose()` dan di-null-kan agar dibuat ulang dengan ukuran baru.
+5. **Shadow terpotong.** Volume shadow camera harus mencakup seluruh kota, sehingga saya atur `left/right/top/bottom` ±24 dan `far` 90.
+6. **Halaman ikut bergulir saat menekan Space atau panah.** Saya menambahkan `e.preventDefault()` untuk tombol-tombol itu.
+7. **Tampilan gepeng saat jendela diubah ukurannya.** Aspect kamera harus diperbarui dan `updateProjectionMatrix()` dipanggil. Untuk kamera ortografik, batas left/right/top/bottom saya hitung ulang dari aspect ratio.
+8. **Animasi melompat setelah pindah tab.** Browser menghentikan frame saat tab tidak aktif, sehingga delta pertama setelah kembali sangat besar. Saya membatasinya dengan `Math.min(clock.getDelta(), 0.1)`.
+9. **Toggle terpicu berkali-kali.** Menahan tombol menghasilkan event berulang, jadi toggle (Space, P, M, dan lainnya) saya proses hanya sekali dengan `if (e.repeat) return`, sedangkan gerak mobil memakai state `keys[]` agar kontinu.
+10. **Warna tekstur terlihat pucat.** Tekstur warna dari Canvas harus diberi `colorSpace = SRGBColorSpace`. Untuk peta emissive (jendela menyala) tidak saya beri karena itu data, bukan warna.
+11. **Tekstur fasad tidak bisa diulang per gedung.** Karena tinggi tiap gedung berbeda, saya memakai `texture.clone()` lalu mengatur `repeat` dan `needsUpdate = true` supaya jendelanya tidak melar.
+12. **Kamera tidak bergerak mulus setelah memakai OrbitControls.** Mode damping membutuhkan `controls.update()` di setiap frame, dan karena ada dua kamera, yang diupdate hanya kontrol dari kamera yang sedang aktif.
 
 ## Eksperimen Wajib 1–11
-Pengamatan di bawah ini berdasarkan perilaku kode dan teori. Silakan cocokkan dengan yang tampil di layar saat mencoba.
 
-**1. WebGL vs Three.js**
+**1. WebGL vs Three.js.** Saat saya bandingkan dengan materi Pertemuan 2–5, ternyata setiap konsep WebGL punya padanan di Three.js.
 
 | Konsep Three.js | Kode di project | Padanan WebGL |
 |---|---|---|
@@ -85,82 +95,82 @@ Pengamatan di bawah ini berdasarkan perilaku kode dan teori. Silakan cocokkan de
 | Light | `AmbientLight`, `DirectionalLight` | perhitungan lighting di shader (ambient, diffuse) |
 | Renderer | `WebGLRenderer.render()` | context, state GPU, draw call |
 
-Kesimpulan: Three.js adalah abstraction di atas WebGL, bukan sistem grafika yang terpisah.
+Kesimpulanku, Three.js adalah abstraction di atas WebGL, bukan sistem grafika yang terpisah.
 
-**2. Segment sphere.** Jumlah vertex `SphereGeometry` adalah `(widthSegments + 1) × (heightSegments + 1)`: 8×6 menghasilkan 63 vertex (sekitar 80 segitiga), 32×16 menghasilkan 561 vertex (sekitar 960 segitiga), dan 64×32 menghasilkan 2145 vertex (sekitar 3968 segitiga). Semakin banyak segment, permukaan makin halus dan tepi siluet makin bulat, tetapi data vertex dan beban render naik. 8×6 tampak bersudut, 32×16 sudah cukup halus, dan 64×32 hanya sedikit lebih halus dibanding 32×16.
+**2. Segment sphere.** Jumlah vertex `SphereGeometry` adalah `(widthSegments + 1) × (heightSegments + 1)`. Dengan 8×6 ada 63 vertex (sekitar 80 segitiga), dengan 32×16 ada 561 vertex (sekitar 960 segitiga), dan dengan 64×32 ada 2145 vertex (sekitar 3968 segitiga). Angkanya juga terlihat di HUD dan Console. Makin banyak segment, bola makin halus dan siluetnya makin bulat, tetapi data vertex dan beban render ikut naik. Menurutku 8×6 jelas bersudut, 32×16 sudah cukup halus, dan 64×32 hanya sedikit lebih halus dibanding 32×16 padahal bebannya jauh lebih besar.
 
-**3. Material tanpa light.** `MeshBasicMaterial` tidak memakai perhitungan cahaya, jadi warnanya rata dan tetap terlihat saat light dimatikan (tombol **L**). `MeshLambertMaterial` menghitung diffuse dari arah cahaya dan normal, jadi saat light mati ia menjadi gelap, dan saat light hidup sisi yang menghadap cahaya terang sedangkan sisi lain gelap. Bedanya karena Basic tidak membaca light, sedangkan Lambert membutuhkannya.
+**3. Material tanpa light.** Saat light saya matikan dengan tombol L, mobil dengan `MeshBasicMaterial` tetap terlihat dengan warna rata, sedangkan Lambert menjadi gelap. Dari situ saya paham bahwa Basic tidak menghitung cahaya sama sekali, sedangkan Lambert menghitung diffuse dari arah cahaya dan normal permukaan. Saat light hidup, sisi Lambert yang menghadap matahari terang dan sisi lainnya gelap.
 
-**4. MeshNormalMaterial.** Warna permukaan dipetakan dari vektor normal (x, y, z menjadi R, G, B). Karena itu warna berubah mengikuti orientasi permukaan terhadap kamera. Material ini tidak membutuhkan light dan berguna untuk memeriksa normal.
+**4. MeshNormalMaterial.** Warna permukaan berasal dari vektor normal (x, y, z dipetakan ke R, G, B). Karena itu warnanya berubah saat permukaan menghadap arah berbeda. Material ini tidak membutuhkan light, dan menurutku berguna untuk memeriksa normal sebuah model.
 
-**5. Lambert vs Phong.** Lambert hanya diffuse, sehingga shading halus tanpa kilap. Phong menambah specular highlight, yaitu titik terang di permukaan yang menghadap arah pantulan cahaya ke kamera, sehingga permukaan tampak mengilap. Hal ini terlihat jelas di galeri bola: bola Phong punya highlight, bola Lambert tidak.
+**5. Lambert vs Phong.** Lambert hanya diffuse, jadi shading-nya halus tanpa kilap. Phong menambah specular highlight, yaitu titik terang di permukaan yang memantulkan cahaya ke arah kamera, sehingga tampak mengilap. Di galeri bola perbedaannya jelas: bola Phong punya highlight, bola Lambert tidak.
 
-**6. Transform.** (1) Tidak, vertex buffer tidak perlu diubah manual. (2) Three.js yang mengelola Model Matrix dari `position`, `rotation`, dan `scale`, lalu mengirimkannya ke shader. (3) Hubungannya dengan Pertemuan 3: translasi, rotasi, dan skala adalah transformasi yang dikomposisikan menjadi Model Matrix.
+**6. Transform.** Saya tidak perlu mengubah vertex buffer secara manual. Yang mengelola Model Matrix adalah Three.js, yang menyusunnya dari `position`, `rotation`, dan `scale` lalu mengirimkannya ke shader. Hubungannya dengan Pertemuan 3 adalah translasi, rotasi, dan skala yang dikomposisikan menjadi satu matriks transformasi.
 
-**7. Light intensity.** DirectionalLight 0.3 membuat scene redup, 1.0 normal, 2.0 terang, dan 4.0 cenderung terlalu terang (warna mulai jenuh di sisi yang menghadap matahari). DirectionalLight memberi arah, sehingga ada sisi terang, sisi gelap, dan shadow. AmbientLight menaikkan kecerahan merata, termasuk sisi gelap, tetapi tidak membentuk shading atau shadow. Intensitas ambient yang tinggi membuat scene tampak datar.
+**7. Light intensity.** Dengan DirectionalLight 0.3 scene tampak redup, 1.0 normal, 2.0 terang, dan 4.0 terlalu terang sehingga warna sisi yang menghadap matahari mulai jenuh. DirectionalLight punya arah, jadi menghasilkan sisi terang, sisi gelap, dan shadow. AmbientLight menaikkan kecerahan secara merata sampai ke sisi gelap tetapi tidak membentuk shading atau shadow. Ketika ambient saya naikkan tinggi, scene jadi terlihat datar.
 
-**8. Shadow.** Shadow hanya muncul jika `renderer.shadowMap.enabled`, `light.castShadow`, `mesh.castShadow`, dan `ground.receiveShadow` semuanya aktif. Mematikan salah satu (tombol **B**, **V**, **N**) membuat shadow kubus hilang. Karena itu shadow butuh konfigurasi di renderer, light, caster, dan receiver.
+**8. Shadow.** Shadow hanya muncul kalau `renderer.shadowMap.enabled`, `light.castShadow`, `mesh.castShadow`, dan `ground.receiveShadow` semuanya aktif. Saat salah satunya saya matikan (tombol B, V, atau N), shadow mobil hilang. Jadi konfigurasinya memang harus lengkap di renderer, light, caster, dan receiver.
 
-**9. FOV.** FOV 35° menyempit: objek tampak lebih besar dan perspektif lebih rata (seperti zoom). FOV 60° terlihat natural. FOV 90° melebar: area terlihat lebih luas, objek tampak kecil dan jauh, dan tepi tampak lebih melar. Terkait Pertemuan 4: FOV mengubah Projection Matrix.
+**9. FOV.** Pada 35° objek tampak lebih besar dan perspektif lebih rata, seperti di-zoom. Pada 60° tampilannya natural. Pada 90° area yang terlihat lebih luas, objek tampak lebih kecil dan jauh, dan tepi layar terlihat lebih melebar. Ini berhubungan dengan Pertemuan 4 karena FOV ikut menentukan Projection Matrix.
 
-**10. Responsive.** Dengan `updateProjectionMatrix()` aktif, scene tetap proporsional saat jendela diubah menjadi lebar, sempit, atau tinggi. Saat dinonaktifkan (tombol **R**), aspect berubah tetapi Projection Matrix tidak dihitung ulang, sehingga gambar tampak melar atau gepeng. Setelah diaktifkan kembali, tampilan normal.
+**10. Responsive.** Dengan `updateProjectionMatrix()` aktif, scene tetap proporsional saat jendela saya buat lebar, sempit, atau tinggi. Setelah saya matikan dengan tombol R, aspect memang berubah tetapi Projection Matrix tidak dihitung ulang, sehingga gambar tampak melar atau gepeng. Setelah saya aktifkan lagi, tampilan kembali normal.
 
-**11. Delta time.** `rotation.y += 0.01` bergantung jumlah frame: layar 144 Hz berputar sekitar 2,4 kali lebih cepat dibanding 60 Hz. `rotation.y += 0.8 * delta` menyatakan kecepatan per detik (0,8 rad/detik), jadi sama di semua frame rate. Tombol **D** membandingkan keduanya.
+**11. Delta time.** Dengan `rotation.y += 0.01`, kecepatan putar bergantung pada jumlah frame: di layar 144 Hz putarannya sekitar 2,4 kali lebih cepat daripada di 60 Hz. Dengan `rotation.y += 0.8 * delta`, kecepatannya dinyatakan per detik (0,8 rad/detik), jadi sama di semua frame rate. Perbandingannya bisa dicoba dengan tombol D.
 
 ## Pertanyaan Pemahaman
-1. Three.js adalah library JavaScript di atas WebGL yang membungkus pekerjaan low-level agar lebih ringkas.
-2. Disebut high-level karena pengguna bekerja dengan object (Scene, Mesh, Camera), bukan buffer, shader, dan draw call langsung.
-3. Tidak. Buffer dan shader tetap ada, hanya dikelola Three.js di belakang layar.
-4. Scene adalah container utama yang menampung object 3D, light, dan group yang akan dirender.
-5. Geometry, Material, dan Mesh yang sudah ditambahkan ke Scene, serta Camera dan Renderer yang merender Scene. Material yang butuh light juga memerlukan Light.
-6. `PerspectiveCamera` membuat proyeksi perspektif: objek yang lebih jauh tampak lebih kecil.
+1. Three.js adalah library JavaScript yang berada di atas WebGL dan membungkus pekerjaan low-level supaya lebih ringkas dipakai.
+2. Disebut high-level karena saya bekerja dengan object seperti Scene, Mesh, dan Camera, bukan langsung dengan buffer, shader, dan draw call.
+3. Tidak. Buffer dan shader tetap ada, hanya saja dikelola Three.js di belakang layar.
+4. Scene adalah wadah utama yang menampung object 3D, light, dan group yang akan dirender.
+5. Minimal ada Geometry dan Material yang digabung menjadi Mesh lalu ditambahkan ke Scene, ditambah Camera dan Renderer untuk menampilkannya. Kalau materialnya butuh cahaya, perlu juga Light.
+6. `PerspectiveCamera` memberi efek perspektif, yaitu object yang lebih jauh tampak lebih kecil.
 7. FOV (field of view) adalah sudut pandang vertikal kamera dalam derajat.
-8. Aspect ratio (lebar/tinggi) mencegah gambar tampak melar atau gepeng.
-9. Near dan far adalah jarak minimum dan maksimum dari kamera untuk objek yang masih dirender.
+8. Aspect ratio (lebar dibagi tinggi) menjaga gambar agar tidak melar atau gepeng.
+9. Near dan far adalah jarak terdekat dan terjauh dari kamera yang masih dirender.
 10. `camera.lookAt()` mengarahkan kamera ke sebuah titik di World Space.
 11. `WebGLRenderer` mengelola konteks WebGL dan menggambar scene dari sudut pandang kamera ke Canvas.
-12. `renderer.domElement` adalah `HTMLCanvasElement` yang dipakai renderer, yang dipasang ke halaman.
-13. Geometry menentukan bentuk (data vertex dan index) sebuah object.
-14. `BufferGeometry` menyimpan attribute (position, normal, uv) dan index dalam array bertipe, yang sepadan dengan vertex/index buffer di WebGL.
-15. Attribute umum: `position`, `normal`, dan `uv`.
-16. Material menentukan bagaimana permukaan dirender (warna, respon terhadap cahaya, dan lainnya).
-17. `MeshBasicMaterial` tidak dipengaruhi light, warnanya rata.
-18. `MeshNormalMaterial` mewarnai permukaan sesuai arah normal, dan berguna untuk debugging.
-19. `MeshLambertMaterial` memakai diffuse lighting sederhana dan membutuhkan light.
-20. `MeshPhongMaterial` memakai diffuse ditambah specular highlight, dan membutuhkan light.
-21. Geometry (bentuk) + Material (tampilan permukaan) = Mesh, objek yang dapat ditempatkan di Scene.
-22. `scene.add()` memasukkan object ke Scene agar ikut dirender.
-23. `position` mengatur lokasi object (translasi).
-24. `rotation` mengatur putaran object (dalam radian).
-25. `scale` mengatur ukuran object pada tiap sumbu.
-26. Three.js menghitung Model Matrix dari position, rotation, dan scale.
-27. `Object3D` adalah kelas dasar object dalam scene (mesh, light, camera, group) yang menyediakan transform dan hierarki.
-28. `AmbientLight` memberi pencahayaan dasar merata tanpa arah.
-29. `DirectionalLight` mensimulasikan cahaya jauh dengan arah seragam, seperti matahari, dan dapat membuat shadow.
-30. Karena warna akhir dihitung dari interaksi cahaya dan permukaan (normal), sehingga tanpa light hasilnya gelap.
-31. Shadow memberi petunjuk kedalaman, posisi object, dan arah cahaya.
-32. `castShadow` berarti object menghasilkan bayangan.
-33. `receiveShadow` berarti permukaan object dapat menerima bayangan.
-34. Karena tanpa `renderer.shadowMap.enabled` renderer tidak memproses shadow map sama sekali.
-35. Animation loop memperbarui state dan merender ulang scene setiap frame sehingga terlihat bergerak.
-36. Agar update visual diselaraskan dengan refresh rate browser dan berhenti saat tab tidak terlihat.
-37. Delta time adalah selisih waktu antar frame, dipakai agar kecepatan animasi sama di berbagai frame rate.
-38. Agar tampilan menyesuaikan ukuran jendela dan tidak terpotong atau buram.
-39. Agar proporsi gambar sesuai ukuran viewport baru sehingga tidak terdistorsi.
-40. Karena mengubah `aspect` tidak otomatis mengubah Projection Matrix, sehingga harus dihitung ulang.
+12. `renderer.domElement` adalah elemen `HTMLCanvasElement` yang dipakai renderer, yang saya pasang ke halaman.
+13. Geometry menentukan bentuk object, yaitu data vertex dan index-nya.
+14. `BufferGeometry` menyimpan attribute dan index dalam array bertipe, yang setara dengan vertex dan index buffer di WebGL.
+15. Attribute yang umum ada adalah `position`, `normal`, dan `uv`.
+16. Material menentukan bagaimana permukaan dirender, seperti warna dan responsnya terhadap cahaya.
+17. `MeshBasicMaterial` tidak dipengaruhi light, jadi warnanya rata dan tetap terlihat tanpa cahaya.
+18. `MeshNormalMaterial` mewarnai permukaan berdasarkan arah normal, dan berguna untuk debugging.
+19. `MeshLambertMaterial` memakai diffuse lighting sederhana dan butuh light.
+20. `MeshPhongMaterial` memakai diffuse ditambah specular highlight, dan juga butuh light.
+21. Geometry (bentuk) ditambah Material (tampilan permukaan) menjadi Mesh, yaitu object yang bisa ditaruh di Scene.
+22. `scene.add()` memasukkan object ke Scene supaya ikut dirender.
+23. `position` mengatur letak object.
+24. `rotation` mengatur putaran object, dalam radian.
+25. `scale` mengatur ukuran object di setiap sumbu.
+26. Three.js menyusun `position`, `rotation`, dan `scale` menjadi Model Matrix.
+27. `Object3D` adalah kelas dasar untuk object di scene (mesh, light, camera, group) yang menyediakan transform dan hierarki parent-child.
+28. `AmbientLight` memberi pencahayaan dasar yang merata tanpa arah.
+29. `DirectionalLight` meniru cahaya jauh dengan arah seragam seperti matahari, dan bisa membuat shadow.
+30. Karena warna akhir material seperti Lambert dan Phong dihitung dari interaksi cahaya dengan permukaan, jadi tanpa cahaya hasilnya gelap.
+31. Shadow membantu memperlihatkan kedalaman, posisi object, dan arah cahaya.
+32. `castShadow` membuat sebuah object menghasilkan bayangan.
+33. `receiveShadow` membuat permukaan object bisa menerima bayangan.
+34. Karena tanpa `renderer.shadowMap.enabled`, renderer tidak memproses shadow map sama sekali.
+35. Animation loop memperbarui kondisi scene dan merendernya ulang setiap frame sehingga tampak bergerak.
+36. Supaya pembaruan tampilan sejalan dengan refresh rate browser dan berhenti saat tab tidak terlihat.
+37. Delta time adalah selang waktu antar frame, dipakai supaya kecepatan animasi sama di frame rate yang berbeda.
+38. Supaya tampilan menyesuaikan ukuran jendela dan tidak terpotong atau buram.
+39. Supaya proporsi gambar sesuai dengan viewport yang baru dan tidak terdistorsi.
+40. Karena mengubah `aspect` hanya mengubah nilainya, sedangkan Projection Matrix harus dihitung ulang agar perubahannya berlaku.
 
 ## Pertanyaan Analisis
-**A — Abstraction.** Di WebGL manual, cube butuh data vertex, buffer, shader (vertex dan fragment), kompilasi dan link program, pengaturan attribute dan uniform, matriks, lalu draw call. Dengan `new THREE.Mesh(geometry, material)`, Three.js menyiapkan buffer, shader, matriks, state GPU, dan draw call sehingga pengguna cukup menentukan bentuk dan tampilannya.
+**A — Abstraction.** Kalau membuat cube di WebGL manual, saya harus menyiapkan data vertex, membuat buffer, menulis vertex dan fragment shader, mengompilasi dan me-link program, mengatur attribute dan uniform, menghitung matriks, lalu memanggil draw call. Dengan `new THREE.Mesh(geometry, material)`, semua itu diurus Three.js, sehingga saya cukup menentukan bentuk dan tampilannya.
 
-**B — Material.** `MeshBasicMaterial` hanya mengeluarkan warna tetap tanpa menghitung cahaya, sehingga terlihat tanpa light. `MeshLambertMaterial` menghitung diffuse dari arah light dan normal permukaan, sehingga tanpa light hasilnya hitam.
+**B — Material.** `MeshBasicMaterial` hanya mengeluarkan warna tetap tanpa menghitung cahaya, jadi tetap terlihat tanpa light. `MeshLambertMaterial` menghitung diffuse dari arah cahaya dan normal permukaan, sehingga tanpa light hasilnya hitam. Hal ini sudah saya buktikan sendiri dengan tombol L.
 
-**C — Geometry.** Segment yang lebih banyak berarti lebih banyak vertex dan segitiga, sehingga lengkung lebih halus. Konsekuensinya data buffer, proses vertex, dan memori bertambah (misalnya 561 vertex menjadi 2145 vertex).
+**C — Geometry.** Segment yang lebih banyak berarti lebih banyak vertex dan segitiga, sehingga lengkungannya lebih halus. Konsekuensinya data buffer, proses vertex, dan memori ikut bertambah. Contohnya sphere naik dari 561 menjadi 2145 vertex saat segment dinaikkan dari 32×16 ke 64×32.
 
-**D — Transform.** Tidak, vertex asli tidak diubah. `mesh.position.x = 2` hanya mengubah nilai transform. Three.js menyusunnya menjadi Model Matrix yang dikalikan ke vertex di shader, sehingga satu geometry bisa dipakai banyak mesh di posisi berbeda.
+**D — Transform.** Tidak, vertex aslinya tidak diubah. `mesh.position.x = 2` hanya mengubah nilai transform. Three.js lalu menyusunnya menjadi Model Matrix yang dikalikan dengan vertex di shader, jadi satu geometry bisa dipakai oleh banyak mesh di posisi berbeda. Itulah yang saya lakukan pada delapan pohon di scene.
 
-**E — Shadow.** Shadow dibuat dengan merender kedalaman scene dari sudut pandang light ke shadow map, lalu dibandingkan saat merender. Maka renderer harus mengaktifkannya, light harus membuat shadow, object harus menjadi caster, dan permukaan harus menjadi receiver. Shadow camera juga harus mencakup area scene.
+**E — Shadow.** Shadow dibuat dengan merender kedalaman scene dari sudut pandang light ke sebuah shadow map, lalu hasilnya dibandingkan saat scene dirender. Karena itu renderer harus mengaktifkan shadow map, light harus membuat shadow, object harus menjadi caster, dan permukaan harus menjadi receiver. Shadow camera juga harus mencakup area scene, jika tidak shadow terpotong seperti yang saya alami.
 
-**F — Responsive Rendering.** Jika hanya renderer yang di-resize tetapi aspect camera tidak diperbarui, Projection Matrix tetap memakai rasio lama sehingga gambar melar atau gepeng dan object tampak terdistorsi.
+**F — Responsive Rendering.** Kalau hanya renderer yang di-resize tetapi aspect kamera tidak diperbarui, Projection Matrix tetap memakai rasio lama sehingga gambar tampak melar atau gepeng dan object terlihat terdistorsi.
 
 ## Refleksi
-Dibanding WebGL manual, Three.js jauh lebih ringkas karena buffer, shader, dan draw call sudah diurus library, sehingga fokus bisa ke isi scene. Abstraction yang paling membantu adalah Mesh (Geometry + Material) dan transform `position/rotation/scale` yang otomatis menjadi Model Matrix. Geometry tetap berisi vertex data (position, normal, uv), terlihat dari jumlah vertex yang berubah saat segment sphere diubah. Material berkaitan dengan shader dan lighting: Basic tidak butuh light, sedangkan Lambert dan Phong butuh light. Konfigurasi shadow yang paling mudah terlupa adalah rantai lengkapnya (renderer, light, caster, receiver) serta cakupan shadow camera. Delta time membuat kecepatan animasi konsisten di berbagai frame rate. Kendala debugging yang ditemukan terutama z-fighting jalan, plane yang tegak, dan pembaruan shadow map saat ukuran diganti.
+Dibandingkan WebGL manual, mengerjakan praktikum dengan Three.js terasa jauh lebih ringkas karena buffer, shader, dan draw call sudah diurus library, sehingga saya bisa fokus ke isi scene. Abstraction yang paling membantu menurutku adalah Mesh (Geometry + Material) dan transform `position/rotation/scale` yang otomatis menjadi Model Matrix. Saya juga melihat bahwa geometry tetap berisi data vertex, terbukti dari jumlah vertex yang berubah saat segment sphere saya ganti. Material berhubungan dengan shader dan lighting, karena Basic tidak butuh light sedangkan Lambert dan Phong butuh. Konfigurasi shadow yang paling mudah terlupa adalah rantainya yang lengkap (renderer, light, caster, receiver) dan cakupan shadow camera. Delta time sangat berguna karena membuat kecepatan animasi sama di berbagai frame rate. Masalah debugging yang paling banyak menyita waktu adalah z-fighting pada jalan, plane yang berdiri tegak, dan memperbarui shadow map saat ukurannya diganti.
