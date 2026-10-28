@@ -118,59 +118,117 @@ Kesimpulanku, Three.js adalah abstraction di atas WebGL, bukan sistem grafika ya
 **11. Delta time.** Dengan `rotation.y += 0.01`, kecepatan putar bergantung pada jumlah frame: di layar 144 Hz putarannya sekitar 2,4 kali lebih cepat daripada di 60 Hz. Dengan `rotation.y += 0.8 * delta`, kecepatannya dinyatakan per detik (0,8 rad/detik), jadi sama di semua frame rate. Perbandingannya bisa dicoba dengan tombol D.
 
 ## Pertanyaan Pemahaman
-1. Three.js adalah library JavaScript yang berada di atas WebGL dan membungkus pekerjaan low-level supaya lebih ringkas dipakai.
-2. Disebut high-level karena saya bekerja dengan object seperti Scene, Mesh, dan Camera, bukan langsung dengan buffer, shader, dan draw call.
-3. Tidak. Buffer dan shader tetap ada, hanya saja dikelola Three.js di belakang layar.
-4. Scene adalah wadah utama yang menampung object 3D, light, dan group yang akan dirender.
-5. Minimal ada Geometry dan Material yang digabung menjadi Mesh lalu ditambahkan ke Scene, ditambah Camera dan Renderer untuk menampilkannya. Kalau materialnya butuh cahaya, perlu juga Light.
-6. `PerspectiveCamera` memberi efek perspektif, yaitu object yang lebih jauh tampak lebih kecil.
-7. FOV (field of view) adalah sudut pandang vertikal kamera dalam derajat.
-8. Aspect ratio (lebar dibagi tinggi) menjaga gambar agar tidak melar atau gepeng.
-9. Near dan far adalah jarak terdekat dan terjauh dari kamera yang masih dirender.
-10. `camera.lookAt()` mengarahkan kamera ke sebuah titik di World Space.
-11. `WebGLRenderer` mengelola konteks WebGL dan menggambar scene dari sudut pandang kamera ke Canvas.
-12. `renderer.domElement` adalah elemen `HTMLCanvasElement` yang dipakai renderer, yang saya pasang ke halaman.
-13. Geometry menentukan bentuk object, yaitu data vertex dan index-nya.
-14. `BufferGeometry` menyimpan attribute dan index dalam array bertipe, yang setara dengan vertex dan index buffer di WebGL.
-15. Attribute yang umum ada adalah `position`, `normal`, dan `uv`.
-16. Material menentukan bagaimana permukaan dirender, seperti warna dan responsnya terhadap cahaya.
-17. `MeshBasicMaterial` tidak dipengaruhi light, jadi warnanya rata dan tetap terlihat tanpa cahaya.
-18. `MeshNormalMaterial` mewarnai permukaan berdasarkan arah normal, dan berguna untuk debugging.
-19. `MeshLambertMaterial` memakai diffuse lighting sederhana dan butuh light.
-20. `MeshPhongMaterial` memakai diffuse ditambah specular highlight, dan juga butuh light.
-21. Geometry (bentuk) ditambah Material (tampilan permukaan) menjadi Mesh, yaitu object yang bisa ditaruh di Scene.
-22. `scene.add()` memasukkan object ke Scene supaya ikut dirender.
-23. `position` mengatur letak object.
-24. `rotation` mengatur putaran object, dalam radian.
-25. `scale` mengatur ukuran object di setiap sumbu.
-26. Three.js menyusun `position`, `rotation`, dan `scale` menjadi Model Matrix.
-27. `Object3D` adalah kelas dasar untuk object di scene (mesh, light, camera, group) yang menyediakan transform dan hierarki parent-child.
-28. `AmbientLight` memberi pencahayaan dasar yang merata tanpa arah.
-29. `DirectionalLight` meniru cahaya jauh dengan arah seragam seperti matahari, dan bisa membuat shadow.
-30. Karena warna akhir material seperti Lambert dan Phong dihitung dari interaksi cahaya dengan permukaan, jadi tanpa cahaya hasilnya gelap.
-31. Shadow membantu memperlihatkan kedalaman, posisi object, dan arah cahaya.
-32. `castShadow` membuat sebuah object menghasilkan bayangan.
-33. `receiveShadow` membuat permukaan object bisa menerima bayangan.
-34. Karena tanpa `renderer.shadowMap.enabled`, renderer tidak memproses shadow map sama sekali.
-35. Animation loop memperbarui kondisi scene dan merendernya ulang setiap frame sehingga tampak bergerak.
-36. Supaya pembaruan tampilan sejalan dengan refresh rate browser dan berhenti saat tab tidak terlihat.
-37. Delta time adalah selang waktu antar frame, dipakai supaya kecepatan animasi sama di frame rate yang berbeda.
-38. Supaya tampilan menyesuaikan ukuran jendela dan tidak terpotong atau buram.
-39. Supaya proporsi gambar sesuai dengan viewport yang baru dan tidak terdistorsi.
-40. Karena mengubah `aspect` hanya mengubah nilainya, sedangkan Projection Matrix harus dihitung ulang agar perubahannya berlaku.
+1. **Apa hubungan Three.js dan WebGL?**  
+   Three.js adalah library JavaScript yang berada di atas WebGL dan membungkus pekerjaan low-level supaya lebih ringkas dipakai.
+2. **Mengapa Three.js disebut high-level library?**  
+   Disebut high-level karena saya bekerja dengan object seperti Scene, Mesh, dan Camera, bukan langsung dengan buffer, shader, dan draw call.
+3. **Apakah Three.js menghilangkan konsep buffer dan shader?**  
+   Tidak. Buffer dan shader tetap ada, hanya saja dikelola Three.js di belakang layar.
+4. **Apa fungsi Scene?**  
+   Scene adalah wadah utama yang menampung object 3D, light, dan group yang akan dirender.
+5. **Apa komponen minimum agar Mesh dapat terlihat?**  
+   Minimal ada Geometry dan Material yang digabung menjadi Mesh lalu ditambahkan ke Scene, ditambah Camera dan Renderer untuk menampilkannya. Kalau materialnya butuh cahaya, perlu juga Light.
+6. **Apa fungsi PerspectiveCamera?**  
+   `PerspectiveCamera` memberi efek perspektif, yaitu object yang lebih jauh tampak lebih kecil.
+7. **Apa arti FOV?**  
+   FOV (field of view) adalah sudut pandang vertikal kamera dalam derajat.
+8. **Apa fungsi aspect ratio?**  
+   Aspect ratio (lebar dibagi tinggi) menjaga gambar agar tidak melar atau gepeng.
+9. **Apa fungsi near dan far?**  
+   Near dan far adalah jarak terdekat dan terjauh dari kamera yang masih dirender.
+10. **Apa fungsi `camera.lookAt()`?**  
+   `camera.lookAt()` mengarahkan kamera ke sebuah titik di World Space.
+11. **Apa fungsi WebGLRenderer?**  
+   `WebGLRenderer` mengelola konteks WebGL dan menggambar scene dari sudut pandang kamera ke Canvas.
+12. **Apa itu `renderer.domElement`?**  
+   `renderer.domElement` adalah elemen `HTMLCanvasElement` yang dipakai renderer, yang saya pasang ke halaman.
+13. **Apa fungsi Geometry?**  
+   Geometry menentukan bentuk object, yaitu data vertex dan index-nya.
+14. **Apa hubungan BufferGeometry dengan vertex buffer?**  
+   `BufferGeometry` menyimpan attribute dan index dalam array bertipe, yang setara dengan vertex dan index buffer di WebGL.
+15. **Attribute apa yang umum tersedia pada BufferGeometry?**  
+   Attribute yang umum ada adalah `position`, `normal`, dan `uv`.
+16. **Apa fungsi Material?**  
+   Material menentukan bagaimana permukaan dirender, seperti warna dan responsnya terhadap cahaya.
+17. **Apa karakter `MeshBasicMaterial`?**  
+   `MeshBasicMaterial` tidak dipengaruhi light, jadi warnanya rata dan tetap terlihat tanpa cahaya.
+18. **Apa fungsi `MeshNormalMaterial`?**  
+   `MeshNormalMaterial` mewarnai permukaan berdasarkan arah normal, dan berguna untuk debugging.
+19. **Apa karakter `MeshLambertMaterial`?**  
+   `MeshLambertMaterial` memakai diffuse lighting sederhana dan butuh light.
+20. **Apa karakter `MeshPhongMaterial`?**  
+   `MeshPhongMaterial` memakai diffuse ditambah specular highlight, dan juga butuh light.
+21. **Apa hubungan Geometry + Material + Mesh?**  
+   Geometry (bentuk) ditambah Material (tampilan permukaan) menjadi Mesh, yaitu object yang bisa ditaruh di Scene.
+22. **Apa fungsi `scene.add()`?**  
+   `scene.add()` memasukkan object ke Scene supaya ikut dirender.
+23. **Apa fungsi `position`?**  
+   `position` mengatur letak object.
+24. **Apa fungsi `rotation`?**  
+   `rotation` mengatur putaran object, dalam radian.
+25. **Apa fungsi `scale`?**  
+   `scale` mengatur ukuran object di setiap sumbu.
+26. **Bagaimana transform Three.js berhubungan dengan Model Matrix?**  
+   Three.js menyusun `position`, `rotation`, dan `scale` menjadi Model Matrix.
+27. **Apa itu `Object3D`?**  
+   `Object3D` adalah kelas dasar untuk object di scene (mesh, light, camera, group) yang menyediakan transform dan hierarki parent-child.
+28. **Apa fungsi AmbientLight?**  
+   `AmbientLight` memberi pencahayaan dasar yang merata tanpa arah.
+29. **Apa fungsi DirectionalLight?**  
+   `DirectionalLight` meniru cahaya jauh dengan arah seragam seperti matahari, dan bisa membuat shadow.
+30. **Mengapa material tertentu membutuhkan Light?**  
+   Karena warna akhir material seperti Lambert dan Phong dihitung dari interaksi cahaya dengan permukaan, jadi tanpa cahaya hasilnya gelap.
+31. **Apa fungsi shadow?**  
+   Shadow membantu memperlihatkan kedalaman, posisi object, dan arah cahaya.
+32. **Apa arti `castShadow`?**  
+   `castShadow` membuat sebuah object menghasilkan bayangan.
+33. **Apa arti `receiveShadow`?**  
+   `receiveShadow` membuat permukaan object bisa menerima bayangan.
+34. **Mengapa renderer shadow map harus diaktifkan?**  
+   Karena tanpa `renderer.shadowMap.enabled`, renderer tidak memproses shadow map sama sekali.
+35. **Apa fungsi animation loop?**  
+   Animation loop memperbarui kondisi scene dan merendernya ulang setiap frame sehingga tampak bergerak.
+36. **Mengapa menggunakan `requestAnimationFrame()`?**  
+   Supaya pembaruan tampilan sejalan dengan refresh rate browser dan berhenti saat tab tidak terlihat.
+37. **Apa fungsi delta time?**  
+   Delta time adalah selang waktu antar frame, dipakai supaya kecepatan animasi sama di frame rate yang berbeda.
+38. **Mengapa renderer harus responsif?**  
+   Supaya tampilan menyesuaikan ukuran jendela dan tidak terpotong atau buram.
+39. **Mengapa camera aspect harus diperbarui saat resize?**  
+   Supaya proporsi gambar sesuai dengan viewport yang baru dan tidak terdistorsi.
+40. **Mengapa `updateProjectionMatrix()` diperlukan?**  
+   Karena mengubah `aspect` hanya mengubah nilainya, sedangkan Projection Matrix harus dihitung ulang agar perubahannya berlaku.
 
 ## Pertanyaan Analisis
-**A — Abstraction.** Kalau membuat cube di WebGL manual, saya harus menyiapkan data vertex, membuat buffer, menulis vertex dan fragment shader, mengompilasi dan me-link program, mengatur attribute dan uniform, menghitung matriks, lalu memanggil draw call. Dengan `new THREE.Mesh(geometry, material)`, semua itu diurus Three.js, sehingga saya cukup menentukan bentuk dan tampilannya.
+**A — Abstraction.**
+*Soal: Bandingkan kode WebGL manual untuk membuat cube dengan `new THREE.Mesh(geometry, material)`. Apa pekerjaan yang disederhanakan Three.js?*
 
-**B — Material.** `MeshBasicMaterial` hanya mengeluarkan warna tetap tanpa menghitung cahaya, jadi tetap terlihat tanpa light. `MeshLambertMaterial` menghitung diffuse dari arah cahaya dan normal permukaan, sehingga tanpa light hasilnya hitam. Hal ini sudah saya buktikan sendiri dengan tombol L.
+Kalau membuat cube di WebGL manual, saya harus menyiapkan data vertex, membuat buffer, menulis vertex dan fragment shader, mengompilasi dan me-link program, mengatur attribute dan uniform, menghitung matriks, lalu memanggil draw call. Dengan `new THREE.Mesh(geometry, material)`, semua itu diurus Three.js, sehingga saya cukup menentukan bentuk dan tampilannya.
 
-**C — Geometry.** Segment yang lebih banyak berarti lebih banyak vertex dan segitiga, sehingga lengkungannya lebih halus. Konsekuensinya data buffer, proses vertex, dan memori ikut bertambah. Contohnya sphere naik dari 561 menjadi 2145 vertex saat segment dinaikkan dari 32×16 ke 64×32.
+**B — Material.**
+*Soal: Mengapa `MeshBasicMaterial` dapat terlihat tanpa Light, sedangkan `MeshLambertMaterial` membutuhkan Light?*
 
-**D — Transform.** Tidak, vertex aslinya tidak diubah. `mesh.position.x = 2` hanya mengubah nilai transform. Three.js lalu menyusunnya menjadi Model Matrix yang dikalikan dengan vertex di shader, jadi satu geometry bisa dipakai oleh banyak mesh di posisi berbeda. Itulah yang saya lakukan pada delapan pohon di scene.
+`MeshBasicMaterial` hanya mengeluarkan warna tetap tanpa menghitung cahaya, jadi tetap terlihat tanpa light. `MeshLambertMaterial` menghitung diffuse dari arah cahaya dan normal permukaan, sehingga tanpa light hasilnya hitam. Hal ini sudah saya buktikan sendiri dengan tombol L.
 
-**E — Shadow.** Shadow dibuat dengan merender kedalaman scene dari sudut pandang light ke sebuah shadow map, lalu hasilnya dibandingkan saat scene dirender. Karena itu renderer harus mengaktifkan shadow map, light harus membuat shadow, object harus menjadi caster, dan permukaan harus menjadi receiver. Shadow camera juga harus mencakup area scene, jika tidak shadow terpotong seperti yang saya alami.
+**C — Geometry.**
+*Soal: Mengapa meningkatkan segment SphereGeometry membuat object lebih halus tetapi juga menambah beban geometry?*
 
-**F — Responsive Rendering.** Kalau hanya renderer yang di-resize tetapi aspect kamera tidak diperbarui, Projection Matrix tetap memakai rasio lama sehingga gambar tampak melar atau gepeng dan object terlihat terdistorsi.
+Segment yang lebih banyak berarti lebih banyak vertex dan segitiga, sehingga lengkungannya lebih halus. Konsekuensinya data buffer, proses vertex, dan memori ikut bertambah. Contohnya sphere naik dari 561 menjadi 2145 vertex saat segment dinaikkan dari 32×16 ke 64×32.
+
+**D — Transform.**
+*Soal: Ketika menulis `mesh.position.x = 2`, apakah vertex asli harus diubah satu per satu? Jelaskan hubungannya dengan Model Matrix.*
+
+Tidak, vertex aslinya tidak diubah. `mesh.position.x = 2` hanya mengubah nilai transform. Three.js lalu menyusunnya menjadi Model Matrix yang dikalikan dengan vertex di shader, jadi satu geometry bisa dipakai oleh banyak mesh di posisi berbeda. Itulah yang saya lakukan pada delapan pohon di scene.
+
+**E — Shadow.**
+*Soal: Mengapa shadow memerlukan konfigurasi lebih dari sekadar menambahkan Light?*
+
+Shadow dibuat dengan merender kedalaman scene dari sudut pandang light ke sebuah shadow map, lalu hasilnya dibandingkan saat scene dirender. Karena itu renderer harus mengaktifkan shadow map, light harus membuat shadow, object harus menjadi caster, dan permukaan harus menjadi receiver. Shadow camera juga harus mencakup area scene, jika tidak shadow terpotong seperti yang saya alami.
+
+**F — Responsive Rendering.**
+*Soal: Apa yang terjadi jika renderer resize tetapi aspect camera tidak diperbarui?*
+
+Kalau hanya renderer yang di-resize tetapi aspect kamera tidak diperbarui, Projection Matrix tetap memakai rasio lama sehingga gambar tampak melar atau gepeng dan object terlihat terdistorsi.
 
 ## Refleksi
 Dibandingkan WebGL manual, mengerjakan praktikum dengan Three.js terasa jauh lebih ringkas karena buffer, shader, dan draw call sudah diurus library, sehingga saya bisa fokus ke isi scene. Abstraction yang paling membantu menurutku adalah Mesh (Geometry + Material) dan transform `position/rotation/scale` yang otomatis menjadi Model Matrix. Saya juga melihat bahwa geometry tetap berisi data vertex, terbukti dari jumlah vertex yang berubah saat segment sphere saya ganti. Material berhubungan dengan shader dan lighting, karena Basic tidak butuh light sedangkan Lambert dan Phong butuh. Konfigurasi shadow yang paling mudah terlupa adalah rantainya yang lengkap (renderer, light, caster, receiver) dan cakupan shadow camera. Delta time sangat berguna karena membuat kecepatan animasi sama di berbagai frame rate. Masalah debugging yang paling banyak menyita waktu adalah z-fighting pada jalan, plane yang berdiri tegak, dan memperbarui shadow map saat ukurannya diganti.
